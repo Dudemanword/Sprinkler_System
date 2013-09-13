@@ -10,12 +10,7 @@ bone.pinmode('P9_22', bone.OUTPUT, 1, 'pullup', 'fast');
 
 //Create a Serial Terminal to communicate with the WiFly Module
 var sp = require('serialport').SerialPort;
-var wifly = new sp('/dev/tty/ttyO1',{baudrate: 9600, databits: 8, stopbits: 1, parity: 'none'); //Need to do some fancy mods to actually get the tty working
+var wifly = new sp('/dev/tty/ttyO1'); //Need to do some fancy mods to actually get the tty working
 
-//Opens function. Due to the asynchronous nature of opening the serial port, I wait in this function until the connection is establused and SOME type of data is received.
-wifly.on('open', function(){
-	wifly.on('data', function(data){
-		console.log('data received ' + data);
-		})
-	});
+
 
