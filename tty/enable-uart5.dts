@@ -7,6 +7,12 @@ modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
+
+//Example of compiling:
+//dtc -O dtb -o enable-uart5-00A0.dtbo -b 0 -@ enable-uart5.dts
+//Move(mv) or Copy(cp) to /lib/firmware
+//echo 'name of compiled firmware without dtbo' > /sys/devices/bone_capemgr.*/slots
+//ttyO4 will be enabled. It will change depending on the mapping of pins(ie UART2 or UART1)
 /dts-v1/;
 /plugin/;
 
@@ -21,10 +27,8 @@ modify
         __overlay__ {
             pinctrl_uart5: pinctrl_uart5_pins {
                 pinctrl-single,pins = <					 				   
-                        0x070 0x26  /* P9_11 = GPIO0_30 = GPMC_WAIT0 , 
-MODE6 */
-                        0x074 0x06  /* P9_13 = GPIO0_31 = GPMC_WPN, 
-MODE6 */
+                        0x070 0x26  /* P9_11 = GPIO0_30 = GPMC_WAIT0 , MODE6 */
+                        0x074 0x06  /* P9_13 = GPIO0_31 = GPMC_WPN, MODE6 */
                 >;
             };
         };
