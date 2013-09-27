@@ -3,6 +3,7 @@ console.log(sql)
 var db = new sql('measurement.db')
 
 db.init_db();
-db.insert('humidity', [90, 1380316237]);
-db.create_table('Shaun2', ['col1', 'col2', 'colooooh'],['INT PRIMARY KEY', 'INT']);
+db.insert('humidity', [90, 1380316231]);
+db.create_table('Shaun4', ['col1', 'col2', 'colooooh'],['INT PRIMARY KEY', 'INT', 'REAL']);
 console.log('afters...');
+db.drop_table('Shaun4')

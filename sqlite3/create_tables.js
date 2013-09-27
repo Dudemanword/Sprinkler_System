@@ -32,7 +32,7 @@ db_management.prototype.insert = function(table, info){
 		}
 	if(table == 'humidity'){
 		database.run('INSERT INTO ' + table + '(Humidity, Time) VALUES(' + info[0] + ',' + info[1] + ')');
-			}
+			}d
 }
 
 //Expected input: db_managment.create_table(tabname,[col1,col2,...], [dat1,dat2,...]) column.length MUST EQUAL datatypes.length)
@@ -51,9 +51,22 @@ db_management.prototype.create_table = function(tablename, column, datatypes){
 
 	}
 	sql = sql + ")";
-
+	console.log(sql)
 	database.run(sql);
 }
 
+db_management.prototype.drop_table = function(tablename){
+	database.run('DROP TABLE ' + tablename);
+	}
 
-module.exports = db_management;
+db_management.prototype.query = function(tablename, colname, mode, num1, num2){
+	if (mode == 'all'){
+		out = database.run('SELECT * FROM ' + tablename);
+		return out;
+		}
+	if (mode == 'range'){
+		out = database.run('SELECT * FROM ' + tablename 'WHERE ' + colname + '>= ' + num1 'AND' colname '<= ' + num2 );
+		return out;
+	}
+}
+
