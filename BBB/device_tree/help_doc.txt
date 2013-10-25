@@ -1,0 +1,14 @@
+Compiling the device tree
+~# dtc -O dtb -o Name_of_dtbo-00A0.dtbo -b 0 -@ name_of_dts.dts
+
+
+Assuming device tree compiled:
+~# cp 'dtbo file' /lib/firmware/
+~# echo 'name of dtbo' > /sys/devices/bone.capemgr.*/slots
+
+Verify thing is working
+~# dmesg
+
+Unmounting device tree
+~# A=`perl -pe 's/^.*(\d+):.*/$1/' $SLOTS | tail -1`
+~# echo -$A > $SLOTS   //SLOTS = /sys/devices/bone.capemgr.*/slots

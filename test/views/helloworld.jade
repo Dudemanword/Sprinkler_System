@@ -1,0 +1,12 @@
+//- extends means use, uses layout.jade to render page. Uses content block to create a title and paragraph...h1 is title, p is paragraph. Just like HTML...
+//- in the paragraph block #{title} references the title variable in index.js when the .jade is called
+extends layout 
+
+block content
+  h1= title
+  p Here is a title for my Hello World thing
+  p Title of page is #{title}
+  P 
+    | Link back to index: 
+  //-<a href = "/" > index </a>
+  a(href="/") Index

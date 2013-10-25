@@ -19,12 +19,18 @@ function terminal_output(command, callback){
 
 wireless_scan.prototype.getData = function(callback){
 	terminal_output('sudo wpa_cli scan ' + wireless_interface, function(info){
+		console.log(typeof info);
+		if (info.indexOf('BUSY') != -1){
+			terminal_output('sudo wpa_cli scan ' + wireless_interface, function(info){
+				console.log('Device busy, rescanning');
+				});
+			}
 		console.log('scanned');
 		terminal_output('sudo wpa_cli scan_results', function(output){
 			console.log('getting results');
 			callback(output);
 		});
-		});
+	});
 	
 }
 
@@ -65,13 +71,13 @@ wireless_scan.prototype.parseData = function(data, callback){
 	callback(SSID, security, sigLevelInt, frequencyInt, macAddress);
 	}
 
-wireless_scan.prototype.generateJSON = function(SSID, security, sigLevelInt, frequencyInt, macAddress, callback){
+/*wireless_scan.prototype.generateJSON = function(SSID, security, sigLevelInt, frequencyInt, macAddress, callback){
 	var jsonarr = [];
 	for (stuff in SSID){
-		jsonarr.push({SSID: SSID[stuff], Security_type: security[stuff], Sig_Strength: sigLevelInt[stuff], Freuency: frequencyInt[stuff], Mac_address: macAddress[stuff]});
+		jsonarr.push({'"SSID"': '"'+SSID[stuff]+'"', '"Security_type"': '"'+security[stuff]+'"', '"Sig_Strength"': '"' + sigLevelInt[stuff] + '"', '"Frequency"': '"'+frequencyInt[stuff]+'"', '"Mac_address"': '"'+macAddress[stuff]+'"'});
 		}
 	callback({Networks: jsonarr});
-	};
+	};*/
 
 wireless_scan.prototype.scan = function(callback){
 	var thisref = this;
@@ -91,6 +97,8 @@ module.exports = wireless_scan
 var wire = new wireless_scan('wlp2s0');
 
 wire.scan(function(json_output){
-	console.log(json_output); 
+	console.log(json_output);
+	JSON.parse(json_output); 
 });
+
 
