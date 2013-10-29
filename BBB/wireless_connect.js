@@ -67,4 +67,6 @@ module.exports = wireless_connect
 var JSONin = {"ssid":"traegalia","password":"ADAB1C21BD82347205BB3B0156","security":"WPA-PSK"};
 var Connect = new wireless_connect(JSONin)
 Connect.connect();
+setInterval(function(){
+	console.log('VICTORY!')}, 2000);
 			
