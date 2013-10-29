@@ -32,6 +32,12 @@ wireless_connect.prototype.connect = function(callback){
 			stream.write('\twep_key0='+connJSON.password+'\n');
 			stream.write('}')
 			stream.end();
+			terminal_output('wpa_supplicant -Dwext -iwlan0 -c /etc/wpa_supplicant.conf -B', function(stdout){
+				console.log('Is it hanging...?');
+				terminal_output('udhcpc -i wlan0', function(stdout){
+					console.log('Please do not hang :3');
+				});
+			});
 		});
 	}
 
@@ -52,6 +58,7 @@ wireless_connect.prototype.connect = function(callback){
 				stream.write('\tgroup='+connJSON.group+'\n');
 			}
 			stream.write('}');
+			stream.end();
 			terminal_output('wpa_supplicant -Dwext -iwlan0 -c /etc/wpa_supplicant.conf -B', function(stdout){
 				console.log('Is it hanging...?');
 				terminal_output('udhcpc -i wlan0', function(stdout){

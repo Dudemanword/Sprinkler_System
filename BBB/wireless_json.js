@@ -18,9 +18,9 @@ function terminal_output(command, callback){
 
 
 wireless_scan.prototype.getData = function(callback){
-	terminal_output('sudo wpa_cli scan ' + wireless_interface, function(info){
+	terminal_output('wpa_cli scan ' + wireless_interface, function(info){
 		console.log('scanned');
-		terminal_output('sudo wpa_cli scan_results', function(output){
+		terminal_output('wpa_cli scan_results', function(output){
 			console.log('getting results');
 			callback(output);
 		});
@@ -33,8 +33,8 @@ wireless_scan.prototype.parseData = function(data, callback){
 	var bssid = /[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}/g
 	var frequency = /\t[0-9]{4}\t/g;
 	var encryption = /\s+(\[[A-Z\-0-9\+]+\])+/g;
-	var siglevel = /\t[0-9]{3}\t/g;
-	var ssid = /\]\s+[\s\w\-\(\)]+(?=\s+)/g
+	var siglevel = /\t[0-9]{1,3}\t/g;
+	var ssid = /\]\s+[\s<>\w\-\(\)]+(?=\s+)/g
 
 	console.log('processing data')
 	console.log(data);
@@ -88,9 +88,10 @@ wireless_scan.prototype.scan = function(callback){
 
 module.exports = wireless_scan
 
-var wire = new wireless_scan('wlp2s0');
+var wire = new wireless_scan('wlan0');
 
 wire.scan(function(json_output){
 	console.log(json_output); 
 });
+
 

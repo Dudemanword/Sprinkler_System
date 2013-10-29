@@ -12,3 +12,6 @@ Verify thing is working
 Unmounting device tree
 ~# A=`perl -pe 's/^.*(\d+):.*/$1/' $SLOTS | tail -1`
 ~# echo -$A > $SLOTS   //SLOTS = /sys/devices/bone.capemgr.*/slots
+
+
+#For scanning/connecting to work properly, user must be added to the WHEEL group
