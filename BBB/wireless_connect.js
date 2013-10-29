@@ -21,7 +21,7 @@ wireless_connect.prototype.connect = function(callback){
 	
 
 	if (connJSON.security.match(/WEP/)){
-		var stream = fs.createWriteStream("/etc/wpa_supplicant.conf");
+		var stream = fs.createWriteStream("./wpa_supplicant.conf");
 		stream.once('open', function(close){
 			stream.write('ctrl_interface=/var/run/wpa_supplicant\n');
 			stream.write('ctrl_interface_group=0\n');
@@ -32,7 +32,7 @@ wireless_connect.prototype.connect = function(callback){
 			stream.write('\twep_key0='+connJSON.password+'\n');
 			stream.write('}')
 			stream.end();
-			terminal_output('wpa_supplicant -Dwext -iwlan0 -c /etc/wpa_supplicant.conf -B', function(stdout){
+			terminal_output('wpa_supplicant -Dwext -iwlan0 -c ./wpa_supplicant.conf -B', function(stdout){
 				console.log('Is it hanging...?');
 				terminal_output('udhcpc -i wlan0', function(stdout){
 					console.log('Please do not hang :3');
@@ -42,7 +42,7 @@ wireless_connect.prototype.connect = function(callback){
 	}
 
 	if (connJSON.security.match(/WPA/)){
-		var stream = fs.createWriteStream('/etc/wpa_supplicant.conf');
+		var stream = fs.createWriteStream('./wpa_supplicant.conf');
 		stream.once('open', function(close){
 			stream.write('ctrl_interface=/var/run/wpa_supplicant\n');
 			stream.write('ctrl_interface_group=0\n');
@@ -59,7 +59,7 @@ wireless_connect.prototype.connect = function(callback){
 			}
 			stream.write('}');
 			stream.end();
-			terminal_output('wpa_supplicant -Dwext -iwlan0 -c /etc/wpa_supplicant.conf -B', function(stdout){
+			terminal_output('wpa_supplicant -Dwext -iwlan0 -c ./wpa_supplicant.conf -B', function(stdout){
 				console.log('Is it hanging...?');
 				terminal_output('udhcpc -i wlan0', function(stdout){
 					console.log('Please do not hang :3');
