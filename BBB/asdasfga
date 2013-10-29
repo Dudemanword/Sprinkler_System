@@ -1,0 +1,19 @@
+		terminal_output('echo ctrl_interface=/var/run/wpa_supplicant >> wpa_supplicant.conf && echo ctrl_interface_group=0 >> wpa_supplicant.conf && echo update_config=1 >> wpa_supplicant.conf && echo network={ >> wpa_supplicant.conf', function(stdout){
+			console.log('Skeleton Created');
+			terminal_output('echo ssid='+connJSON.ssid + ' && echo key_mgmt=NONE && wep_key0='+connJSON.password + ' && echo }', function(stdout){
+				console.log('echo ssid='+connJSON.ssid + ' && echo key_mgmt=NONE && wep_key0='+connJSON.password + ' && echo }');
+		});
+	});
+		
+		terminal_output('mv wpa_supplicant.conf /etc/wpa_supplicant.conf', function(stdout){
+			console.log('wpa_supplicant.conf moved')
+		});
+		terminal_output('wpa_supplicant -Dwext -iwlan0 -c /etc/wpa_supplicant.conf', function(stdout){
+			console.log('I hope this does not hang...')
+		});
+		terminal_output('udhcpc -i wlan0', function(stdout){
+			console.log(stdout)
+		});
+	}
+}
+
