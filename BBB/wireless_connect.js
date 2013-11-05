@@ -6,7 +6,7 @@ var connJSON
 
 function terminal_output(command, callback){
 	exec(command, function(error, stdout, stderr){
-		callback(stdout);
+		callback(error, stdout, stderr);
 	});
 }
 
@@ -15,8 +15,8 @@ function wireless_connect(jsonIn){
 } 
 
 wireless_connect.prototype.connect = function(callback){
-	terminal_output('touch wpa_supplicant.conf', function(stdout){
-		console.log('wpa_supplicant.conf created');
+	terminal_output('rm /var/run/wpa_supplicant/wlan0', function(error, stdout, stderr){
+		console.log('wlan0 removed');
 	});
 	
 
@@ -32,10 +32,19 @@ wireless_connect.prototype.connect = function(callback){
 			stream.write('\twep_key0='+connJSON.password+'\n');
 			stream.write('}')
 			stream.end();
-			terminal_output('wpa_supplicant -Dwext -iwlan0 -c ./wpa_supplicant.conf -B', function(stdout){
+			current_date = new Date();
+			current_time = current_date.getTime();
+			terminal_output('wpa_supplicant -Dwext -iwlan0 -c ./wpa_supplicant.conf -B', function(error, stdout, stderr){
 				console.log('Is it hanging...?');
-				terminal_output('udhcpc -i wlan0', function(stdout){
-					console.log('Please do not hang :3');
+				setInterval(function(){
+					now_date = Date();
+					now_time = now_date.getTime();
+					if(now_time - current_time > 45000){
+						throw 'Cannot connect to network. Check your settings and try again';
+						}
+					}, 2000);
+				terminal_output('udhcpc -i wlan0', function(error, stdout, stderr){
+					console.log('Please do not hang :3')
 				});
 			});
 		});
@@ -59,9 +68,10 @@ wireless_connect.prototype.connect = function(callback){
 			}
 			stream.write('}');
 			stream.end();
-			terminal_output('wpa_supplicant -Dwext -iwlan0 -c ./wpa_supplicant.conf -B', function(stdout){
-				console.log('Is it hanging...?');
-				terminal_output('udhcpc -i wlan0', function(stdout){
+			terminal_output('wpa_supplicant -Dwext -iwlan0 -c ./wpa_supplicant.conf -B', function(error, stdout, stderr){
+				console.log(error, stdout, stderr);
+				terminal_output('udhcpc -i wlan0', function(error, stdout, stderr){
+					console.log(error, stdout, stderr);
 					console.log('Please do not hang :3');
 				});
 			});
@@ -71,9 +81,6 @@ wireless_connect.prototype.connect = function(callback){
 module.exports = wireless_connect
 //Test the module
 //var JSONin = {"ssid":"RajNetwork","password":"e65d7a1414e6e34bc874ebdb69", "security":"WEP"}
-var JSONin = {"ssid":"traegalia","password":"ADAB1C21BD82347205BB3B0156","security":"WPA-PSK"};
+//var JSONin = {"ssid":"traegalia","password":"ADAB1C21BD82347205BB3B0157","security":"WPA-PSK"};
 var Connect = new wireless_connect(JSONin)
-Connect.connect();
-setInterval(function(){
-	console.log('VICTORY!')}, 2000);
-			
+Connect.connect();			
