@@ -47,6 +47,7 @@ scheduler.prototype.createEvent = function(callback){
 						if (!(date%2))
 							dates.push(date);
 				}
+				console.log(dates)
 
 				rule = new schedule.RecurrenceRule();
 				rule.date = dates;
@@ -112,7 +113,7 @@ scheduler.prototype.createEvent = function(callback){
 		case 'weekly':
 				dayweek = [];
 				rule = new schedule.RecurrenceRule();
-				for (days) in (dateRule.dayofweek){
+				for (days in dateRule.dayofweek){
 						if (days == 'sunday')
 							dayweek.push(0);
 						if (days == 'monday')
@@ -127,6 +128,7 @@ scheduler.prototype.createEvent = function(callback){
 							dayweek.push(5);
 						if(days == 'saturday')
 							dayweek.push(6);
+				}
 
 				rule.dayOfWeek = dayweek;
 				rule.hour = dateRule.hour;
@@ -137,6 +139,7 @@ scheduler.prototype.createEvent = function(callback){
 				});
 
 				callback(job)
+				break;
 
 			default:
 				console.log('something went wrong');
@@ -157,6 +160,8 @@ function testJob(){
 
 
 sched = new scheduler(function(){testJob()}, {"special": 'odd', "hour" : 17, "minute":30});
-sched.createEvent(function(callback){console.log(callback)});
+sched.createEvent(function(callback){
+	console.log(callback);
+	});
 
 	
