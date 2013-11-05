@@ -59,11 +59,11 @@ stream.write('ctrl_interface_group=nodectrl\n');
 			stream.write('update_config=1\n');
 			stream.write('network={\n');
 			stream.write('\tssid="'+connJSON.ssid+'"\n');
-			stream.write('\tkey_mgmt='+connJSON.security+'\n');
+			stream.write('\tkey_mgmt='+connJSON.security.match(/WPA/)[0]+connJSON.security.match(/(PEAP|PSK)/)[0]+'\n');
 			if (connJSON.security.match(/EAP/)){
-				stream.write('\teap='+connJSON.special+'\n');
+				stream.write('\teap='+connJSON.security.match(/(PEAP)/)[0]+'\n');
 				stream.write('\tidentity="'+connJSON.username+'"\n');
-				stream.write('\tphase2="autheap='+connJSON.eaptype+'"\n');
+				stream.write('\tphase2="autheap='+connJSON.security.match(/GTC/)[0]+'"\n');
 				stream.write('\tpassword="'+connJSON.password+'"\n');
 			}
 			stream.write('\tbssid='+connJSON.bssid+'\n');
@@ -79,9 +79,16 @@ stream.write('ctrl_interface_group=nodectrl\n');
 			console.log('Password?\n');
 			terminal_output('sudo /usr/sbin/wpa_supplicant -Dwext -iwlan0 -c ./wpa_supplicant.conf -B', function(error, stdout, stderr){
 				console.log(error, stdout, stderr);
+				if(error | stderr) throw error;
 				console.log('Pass Here?');
+				//var i = 0;
 				terminal_output('sudo /sbin/udhcpc -i wlan0', function(error, stdout, stderr){
+//					setInterval(function(){i++;}, 2000);
+//					console.log(i);
+//					if( i == 45){
+//						throw "Cannot connect, check your connection settings";}
 					console.log(error, stdout, stderr);
+//					if(error | stderr) throw error;
 					console.log('Please do not hang :3');
 				});
 			});
@@ -92,7 +99,7 @@ module.exports = wireless_connect
 //Test the module
 //var JSONin = {"ssid":"RajNetwork","password":"e65d7a1414e6e34bc874ebdb69", "security":"WEP"}
 //var JSONin = {"ssid":"traegalia","password":"ADAB1C21BD82347205BB3B0157","security":"WPA-PSK"};
-var JSONin = {"bssid":"6c:f3:7f:e9:de:c0","ssid":"UCCS-Wireless","username":"sraj2", "password":"Iwashere1234", "special":"PEAP", "eaptype":"GTC", "security":"WPA-EAP"};
+var JSONin = {"bssid":"6c:f3:7f:ea:ba:80","ssid":"UCCS-Wireless","username":"sraj2", "password":"Iwashere1234", "special":"PEAP", "eaptype":"GTC", "security":"WPA-EAP"};
 var Connect = new wireless_connect(JSONin)
 Connect.connect();
 /*setInterval(function(){
