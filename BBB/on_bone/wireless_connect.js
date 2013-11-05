@@ -59,7 +59,7 @@ stream.write('ctrl_interface_group=nodectrl\n');
 			stream.write('update_config=1\n');
 			stream.write('network={\n');
 			stream.write('\tssid="'+connJSON.ssid+'"\n');
-			stream.write('\tkey_mgmt='+connJSON.security.match(/WPA/)[0]+connJSON.security.match(/(PEAP|PSK)/)[0]+'\n');
+			stream.write('\tkey_mgmt='+connJSON.security.match(/WPA/)[0]+'-'+connJSON.security.match(/(PEAP|PSK)/)[0]+'\n');
 			if (connJSON.security.match(/EAP/)){
 				stream.write('\teap='+connJSON.security.match(/(PEAP)/)[0]+'\n');
 				stream.write('\tidentity="'+connJSON.username+'"\n');
