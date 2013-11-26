@@ -3,6 +3,8 @@ var bone = require('bonescript');
 
 var controller
 var dateRule
+var events = require('events');
+var stop = new events.Emitter();
 
 function scheduler(controller_object, dateRuleObj){
 	controller = controller_object;
@@ -16,7 +18,7 @@ scheduler.prototype._getDate = function(callback){
 	_date = date.getDate();
 	day = date.getDay();
 	time = date.getTime();
-	dateObj = {"year":year, "month":month, "day":day,"time":time, "date":_date}
+	dateObj = {"year":year, "month":month, "day":day,"time":time, "date":_date};
 	callback(dateObj);
 }
 
@@ -87,7 +89,7 @@ scheduler.prototype.createEvent = function(callback){
 
 				break;
 
-		case 'monthly':
+			case 'monthly':
 				rule = new schedule.RecurrenceRule();
 				rule.date = dateRule.date;
 				rule.minute = dateRule.minute;
@@ -100,7 +102,7 @@ scheduler.prototype.createEvent = function(callback){
 				
 				break;
 	
-		case 'once':
+			case 'once':
 				sched_date = new Date(dateRule.year, dateRule.month, dateRule.date, dateRule.hour, dateRule.minute);
 				job = schedule.scheduleRule(sched_date, function(){
 					controller();
@@ -110,7 +112,7 @@ scheduler.prototype.createEvent = function(callback){
 
 				break;
 
-		case 'weekly':
+			case 'weekly':
 				dayweek = [];
 				rule = new schedule.RecurrenceRule();
 				for (days in dateRule.dayofweek){
@@ -142,21 +144,13 @@ scheduler.prototype.createEvent = function(callback){
 				break;
 
 			default:
-				console.log('something went wrong');
+				callback('something went wrong');
 		}
 	});
 		
 	
 }
 
-function testJob(){
-	setInterval(function(){
-		bone.digitalWrite('P8_41', bone.HIGH);
-		setInterval(function(){
-		bone.digitalWrite('P8_41', bone.LOW);}, 1000);
-		},2000);
-		console.log('in job');
-	}
 
 
 sched = new scheduler(function(){testJob()}, {"special": 'odd', "hour" : 17, "minute":30});

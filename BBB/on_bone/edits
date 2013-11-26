@@ -1,0 +1,14 @@
+#For getting the node i2c module installed and working
+ntpdate -b -s -u pool.ntp.org
+opkg update
+opkg install python-compile
+opkg install python-modules
+npm config set strict-ssl false
+npm install i2c
+
+#Add to startup script to sync time
+echo ds1307 0x68 > /sys/class/i2c-adapter/i2c-1/new_device
+hwclock -s -f /dev/rtc1
+hwclock -w
+
+

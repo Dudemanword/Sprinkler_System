@@ -1,0 +1,2 @@
+export DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-qGyK8fGqMC,guid=51ab8000e7a360fac2b1b33f386d4fed DBUS_SESSION_BUS_PID=564
+Above lets me edit stuff over ssh using X11 forwarding
