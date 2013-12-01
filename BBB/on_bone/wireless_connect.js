@@ -6,6 +6,7 @@ var connJSON
 
 function terminal_output(command, callback){
 	exec(command, function(error, stdout, stderr){
+		console.log(error,stdout,stderr);
 		callback(error, stdout, stderr);
 	});
 }
@@ -75,14 +76,8 @@ n				});
 				console.log(error, stdout, stderr);
 				if(error | stderr) throw error;
 				console.log('Pass Here?');
-				//var i = 0;
 				terminal_output('sudo /sbin/udhcpc -i wlan0', function(error, stdout, stderr){
-//					setInterval(function(){i++;}, 2000);
-//					console.log(i);
-//					if( i == 45){
-//						throw "Cannot connect, check your connection settings";}
 					console.log(error, stdout, stderr);
-//					if(error | stderr) throw error;
 					console.log('Please do not hang :3');
 				});
 			});
@@ -92,7 +87,7 @@ n				});
 module.exports = wireless_connect
 //Test the module
 //var JSONin = {"ssid":"RajNetwork","password":"e65d7a1414e6e34bc874ebdb69", "security":"WEP"}
-//var JSONin = {"ssid":"traegalia","password":"ADAB1C21BD82347205BB3B0157","security":"WPA-PSK"};
+//var JSONin = {"ssid":"traegalia","password":"ADAB1C21BD82347205BB3B0156","security":"WPA-PSK"};
 var JSONin = {"ssid":"UCCS-Wireless","username":"sraj2", "password":"Iwashere1234", "special":"PEAP", "eaptype":"GTC", "security":"WPA-EAP"};
 var Connect = new wireless_connect(JSONin)
 Connect.connect();

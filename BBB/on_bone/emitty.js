@@ -1,11 +1,13 @@
 var events = require('events');
+//var emit = require('./emit.js');
+
 var event = new events.EventEmitter();
 
-event.on('test', testfunc)
-
-
+function testfunc(){
+	console.log('In testfunc')
+}
 
 //module.exports = event;
-module.exports = function testfunc(events){
-	console.log('In testfunc');
+module.exports = function(Events) {
+	testfunc;
 }

@@ -9,45 +9,45 @@ function scheduler (control_name){
 }
 
 scheduler.prototype.createEvent= function(type, jsonIn, callback){
-//function (type, jsonIn, callback){
 	json = JSON.parse(jsonIn);
 	switch (type){
 		case 'Once':
 			var job = new cronJob(json.minute + ' ' + json.hour + ' ' + json.day + ' ' + json.month + ' ' + json.dayofweek, function(){
-				controller(function(callback){
-					console.log(callback);});
-					}, function(){job.stop()}
+				controller()
+			},function(){console.log('Done');}
 			);
 			job.start();
-			callback('schedule created');
+			callback(job);
 			break
 
 		case 'Odd':
 			var job = new cronJob(json.minute + ' ' + json.hour + ' ' + '1-31/2 ' + json.month + ' *', function(){
-				//Do whatever I need to do to execute the controller
+				controller()
 				console.log('In Odd');
 				}
 			);
 			job.start();
-			callback('schedule created');
+			callback(job);
 			break
 	
 		case 'Even':
 			var job = new cronJob(json.minute + ' ' + json.hour + ' ' + '0-30/2 ' + json.month + ' *', function(){
+				controller();
 				console.log('In Even');
 				}
 			);
 			job.start();
-			callback('schedule created');
+			callback(job);
 			break
 
 		case 'Daily':
 			var job = new cronJob(json.minute + ' ' + json.hour + ' * * *', function(){
+				controller();				
 				console.log('Daily')
 				}
 			);
 			job.start();
-			callback('schedule created');	
+			callback(job);	
 			break
 
 		case 'ndays':
@@ -55,27 +55,30 @@ scheduler.prototype.createEvent= function(type, jsonIn, callback){
 			if (div > 0){
 				var hour = json.hour + '/' + div
 				var job = new cronJob(json.minute + ' ' + hour + '* * *', function(){
+					controller();					
 					console.log('in ndays')
 					});
 				}
 			job.start();
-			callback('schedule created');
+			callback(job);
 			break
 
 		case 'Days':
 			var job = new cronJob(json.minute + ' ' + json.hour + ' * ' + json.month + ' ' + json.dayofweek, function(){
+				controller();				
 				console.log('In Days');
 				}
 			);
 			job.start();
-			callback('schedule created');
+			callback(job);
 			break
 
-		case 'Now':							/*Need to add a way to stop the job once completion has been detected, goes 											  in the second function block */
+		case 'Now':							
 			var job = new cronJob(json.minute + ' ' + json.hour + ' ' + json.month + ' ' + json.dayofweek, function(){
+				controller();				
 				console.log('In Now')
-			}, function(){job.stop}, true);
-			callback('schedule created');			
+			}, function(){}, true);
+			callback(job);			
 			break
 	}
 	
@@ -83,20 +86,7 @@ scheduler.prototype.createEvent= function(type, jsonIn, callback){
 }
 testjson1 = '{"minute": "02", "hour": "11","day": "11", "month": "Oct", "dayofweek": "Fri"}';
 
-var sprink = new scheduler('sprinkler');
-sprink.createEvent('Once', testjson1, function(isDone){
-		console.log(isDone);
-	}
-);
-
-var sprink2 = new scheduler('sprinks');
-testjson2 = '{"minute": "*", "hour": "*", "day": "*", "month": "*", "dayofweek": "*"}';
-sprink2.createEvent('Once', testjson2, function(isDone){
-		console.log(isDone + ' func 2');	
-	}
-);
-
-function testJob(callback){
+/*function testJob(callback){
 	setInterval(function(){
 		setTimeout(function(){
 			pin = 'P8_41'
@@ -118,10 +108,13 @@ function testJob2(callback){
 				bone.digitalWrite(pin2, bone.LOW);}, 1000);
 			},2000);}, 3000);
 	callback('Gurl')
-}		
+}*/		
 
-var switchy = new scheduler(testJob)
+function consoletest(){
+	console.log('In test');
+}
+
+var switchy = new scheduler(consoletest)
 testjson2 = '{"minute": "*", "hour": "*", "day": "*", "month": "*", "dayofweek": "*"}';
-switchy.createEvent('Once', testjson2, function(isDone){
-	console.log(isDone);
+	switchy.createEvent('Now', testjson2, function(isDone){
 });

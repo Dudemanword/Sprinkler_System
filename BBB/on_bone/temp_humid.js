@@ -1,7 +1,6 @@
 var i2c = require('i2c');
 var event = require('events');
-
-var bone = require('bonescript');
+var bone = require('bonescript')
 
 adjustor = new event.EventEmitter();
 
@@ -9,7 +8,13 @@ var si7005_address = 0x40;
 
 var temp_obj, type, zone;
 
+adjustor.on('CLOSE', function(){
+	bone.digitalWrite(zone,0);
+});
 
+adjustor.on('OPEN', function(){
+	bone.digitalWrite(zone,1);
+});
 
 function si7005(_type, zone_pin, condition_obj){;
 	type = _type;
@@ -17,11 +22,11 @@ function si7005(_type, zone_pin, condition_obj){;
 }
 
 function open(zone){
-	bone.digitalWrite(zonemap[zone], bone.HIGH);
+	bone.digitalWrite(zone, 1);
 }
 
 function close(zone){
-	bone.digitalWrite(zonemap[zone], bone.LOW);
+	bone.digitalRead(zone,0)
 }
 
 si7005.prototype.scanCondition = function(condition_object){
@@ -87,12 +92,6 @@ function emit_stuff(condition,res,type,callback){
 	}
 	callback(bool);
 }
-
-module.exports = function(Events){
-	adjustor.on('CLOSE', close(zone));
-	adjustor.on('OPEN', open(zone));
-}
-
 temp = new si7005('temp')
 temp.getResults(function(res){
 	console.log('Temp results ' + res);
