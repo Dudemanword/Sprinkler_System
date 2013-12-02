@@ -56,10 +56,12 @@ stream.write('ctrl_interface_group=0\n');
 			stream.write('\twep_key0='+connJSON.password+'\n');
 			stream.write('}')
 			stream.end();
-			terminal_output('sudo /usr/sbin/wpa_supplicant -Dwext -iwlan0 -c ./wpa_supplicant.conf -B', function(error, stdout, stderr){
-				console.log('Is it hanging...?');
-				terminal_output('sudo /sbin/udhcpc -i wlan0', function(error, stdout, stderr){
-					console.log('Please do not hang :3')
+						terminal_output('sudo /usr/sbin/wpa_supplicant -Dwext -iwlan0 -c ./wpa_supplicant.conf',{ encoding: 'utf8',timeout: 40000,maxBuffer: 200*1024,killSignal: 'SIGTERM',cwd: null,env: null }, function(error, stdout, stderr){
+				console.log(error, stdout, stderr);
+				if(error | stderr) throw error;
+				terminal_output('sudo /sbin/udhcpc -i wlan0' ,{ encoding: 'utf8',timeout: 1000,maxBuffer: 200*1024,killSignal: 'SIGTERM',cwd: null,env: null }, function(error, stdout, stderr){
+					console.log(error, stdout, stderr);
+					console.log('Please do not hang :3');
 				});
 			});
 		});
@@ -90,7 +92,7 @@ stream.write('ctrl_interface_group=0\n');
 			}
 			stream.write('}');
 			stream.end();
-			terminal_output('sudo /usr/sbin/wpa_supplicant -Dwext -iwlan0 -c ./wpa_supplicant.conf -B',{ encoding: 'utf8',timeout: 40000,maxBuffer: 200*1024,killSignal: 'SIGTERM',cwd: null,env: null }, function(error, stdout, stderr){
+			terminal_output('sudo /usr/sbin/wpa_supplicant -Dwext -iwlan0 -c ./wpa_supplicant.conf -B',{ encoding: 'utf8',timeout: 1000,maxBuffer: 200*1024,killSignal: 'SIGTERM',cwd: null,env: null }, function(error, stdout, stderr){
 				console.log(error, stdout, stderr);
 				if(error | stderr) throw error;
 				terminal_output('sudo /sbin/udhcpc -t 3 -i wlan0' ,{ encoding: 'utf8',timeout: 30000,maxBuffer: 200*1024,killSignal: 'SIGTERM',cwd: null,env: null }, function(error, stdout, stderr){
@@ -103,8 +105,8 @@ stream.write('ctrl_interface_group=0\n');
 }
 module.exports = wireless_connect
 //Test the module
-//var JSONin = {"ssid":"RajNetwork","password":"e65d7a1414e6e34bc874ebdb69", "security":"WEP"}
-var JSONin = {"ssid":"traegalia","password":"ADAB1C21BD82347205BB3B0156","security":"WPA-PSK"};
+var JSONin = {"ssid":"RajNetwork","password":"e65d7a1414e6e34bc874ebdb69", "security":"WEP"}
+//var JSONin = {"ssid":"traegalia","password":"ADAB1C21BD82347205BB3B0156","security":"WPA-PSK"};
 //var JSONin = {"ssid":"UCCS-Wireless","username":"sraj2", "password":"Iwashere1234", "special":"PEAP", "eaptype":"GTC", "security":"WPA-EAP"};
 var Connect = new wireless_connect(JSONin)
 Connect.connect();
