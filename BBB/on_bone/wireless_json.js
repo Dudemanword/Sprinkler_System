@@ -31,6 +31,7 @@ wireless_scan.prototype.parseData = function(data, callback){
 	data.shift()
 	console.log(data);
 	var encryption = /(WEP|(WPA2?))/g
+	var enc_onoff = /Encryption key:(on|off)/g
 	var bssid = /[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}/g
 	var essid = /ESSID:"[<a-zA-Z0-9_\->\.]+"/g
 	var sig_level = /Signal level=[0-9]+/g
@@ -45,6 +46,11 @@ wireless_scan.prototype.parseData = function(data, callback){
 		data_bssid = data[info].match(bssid).toString();
 		data_ssid = (data[info].match(essid)).toString().replace(/ESSID:/g,'').replace(/"/g,'');
 		data_level = (data[info].match(sig_level)).toString().replace(/Signal level=/g,'');
+		enc_switch = (data[info].match(enc_onoff)).toString().replace(/Encryption key:/,'')
+		console.log(enc_switch)
+		if((enc_switch == 'on') && (data_enc == 'N/A'))
+			data_enc = 'WEP'
+		console.log(enc_switch);
 		obj_arr.push({'encryption':data_enc, 'bssid':data_bssid, 'ssid':data_ssid,'sig_level':data_level})
 
 	}
