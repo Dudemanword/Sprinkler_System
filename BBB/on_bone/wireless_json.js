@@ -37,8 +37,11 @@ wireless_scan.prototype.parseData = function(data, callback){
 	for (info in data){
 		data[info] = data[info].replace(/\n/g, '');
 		data_enc = data[info].match(encryption);
-		data_bssid = data[info].match(bssid);
-		data_ssid = (data[info].match(essid)).toString().replace(/ESSID:/g,'');
+		if(data_enc == null)
+			data_enc = 'N/A';
+		data_enc = data_enc.toString()
+		data_bssid = data[info].match(bssid).toString();
+		data_ssid = (data[info].match(essid)).toString().replace(/ESSID:/g,'').replace(/"/g,'');
 		data_level = (data[info].match(sig_level)).toString().replace(/Signal level=/g,'');
 		obj_arr.push({'encryption':data_enc, 'bssid':data_bssid, 'ssid':data_ssid,'sig_level':data_level})
 
