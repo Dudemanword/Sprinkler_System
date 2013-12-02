@@ -9,33 +9,15 @@ function wireless_scan(_interface){
 	wireless_interface = _interface
 	}
 
-//Function for executing command in *NIX terminal. Output is sent to callback
-function terminal_output(command, callback){
-	exec(command, function(error, stdout, stderr){
-		callback(error,stdout,stderr);
+wireless_scan.prototype.getData = function(callback){
+	exec("iwlist wlan0 scanning | egrep 'Cell |Encryption|Quality|Last beacon|ESSID|(IE: WPA|WEP)|(Signal level)'", function(error, stdout, stderr){
+		callback(stdout);
 	});
-}
-
-
-wireless_scan.prototype.getData = function(useEmp,callback){
-	terminal_output('pgrep wpa', function(error, stdout, stderr){
-		if((stdout == '') || (useEmp == 1)){
-			terminal_output('sudo /usr/sbin/wpa_supplicant -Dwext -iwlan0 -c ./empty_wpa_supplicant.conf', function(error, stdout, stderr){
-				console.log('reinitializing wpa_supplicant);
-			});
-		}			
-	terminal_output('sudo /usr/sbin/wpa_cli scan ' + wireless_interface, function(info){
-		console.log('scanned');
-		terminal_output('sudo /usr/sbin/wpa_cli scan_results', function(error,output,stderr){
-			console.log('getting results');
-			callback(output);
-		});
-	});	
 }
 
 wireless_scan.prototype.getIPaddress = function(callback){
 	var inet_regex = /inet (([0-9]{1,3}.){3}[0-9]{1,3})/g
-	terminal_output('ip addr show ' + wireless_interface, function(ip_address, stdout, stderr){
+	exec('ip addr show ' + wireless_interface, function(ip_address, stdout, stderr){
 		if(ip_address)
 			callback(ip_address.match(inet_regex)[0].split('inet ')[1]);
 		else		
@@ -44,61 +26,42 @@ wireless_scan.prototype.getIPaddress = function(callback){
 }
 
 wireless_scan.prototype.parseData = function(data, callback){
-	//Creating the search parameters
+	data = data.split(/Cell /g)
+	obj_arr = []
+	data.shift()
+
+	var encryption = /(WEP|WPA)/g
 	var bssid = /[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}/g
-	var frequency = /\t[0-9]{4}\t/g;
-	var encryption = /\s+(\[[A-Z\-0-9\+]+\])+/g;
-	var siglevel = /\t[0-9]{1,3}\t/g;
-	var ssid = /\]\s+[\s<>\w\-\(\)]+(?=\s+)/g
+	var essid = /ESSID:"[<a-zA-Z0-9_\->\.]+"/g
+	var sig_level = /Signal level=[0-9]+/g
+	for (info in data){
+		data[info] = data[info].replace(/\n/g, '');
+		data_enc = data[info].match(encryption);
+		data_bssid = data[info].match(bssid);
+		data_ssid = (data[info].match(essid)).toString().replace(/ESSID:/g,'');
+		data_level = (data[info].match(sig_level)).toString().replace(/Signal level=/g,'');
+		obj_arr.push({'encryption':data_enc, 'bssid':data_bssid, 'ssid':data_ssid,'sig_level':data_level})
+
+	}
+	
+	console.log(obj_arr)
+	for (info in data)
 
 	console.log('processing data')
-	console.log(data);
 	
-	macAddress = data.match(bssid);
-	frequencyInt = data.match(frequency);
-	security = data.match(encryption);
-	sigLevelInt = data.match(siglevel);
-	SSID = data.match(ssid);
+	callback(obj_arr)
+}
 
-	for (freq in frequencyInt){
-		frequencyInt[freq] = frequencyInt[freq].replace(/\t/g,'');
-	}
-	
-	for (siglev in sigLevelInt){
-		sigLevelInt[siglev] = sigLevelInt[siglev].replace(/\t/g,'');
-	}
-
-	for (id in SSID){
-		SSID[id] = SSID[id].replace(/]\t/g,'');
-	}
-
-	for (sec in security){
-		security[sec] = security[sec].replace(/\t/g, '');
-	}
-	
-	console.log(security);
-	callback(SSID, security, sigLevelInt, frequencyInt, macAddress);
-	}
-
-wireless_scan.prototype.generateJSON = function(SSID, security, sigLevelInt, frequencyInt, macAddress, callback){
-	var jsonarr = [];
-	for (stuff in SSID){
-		jsonarr.push({"SSID": SSID[stuff], "Security_type": security[stuff], "Sig_Strength": sigLevelInt[stuff], "Frequency": frequencyInt[stuff], "Mac_address": macAddress[stuff]});
-		}
-	callback({Networks: jsonarr});
-	};
 
 wireless_scan.prototype.scan = function(callback){
 	var thisref = this;
 	thisref.getData(function(data){
-		thisref.parseData(data, function(SSID, security, sigLevelInt, frequencyInt, macAddress){
-			thisref.generateJSON(SSID, security, sigLevelInt, frequencyInt, macAddress, function(isDone){
-				callback(isDone);	
-			});
+		thisref.parseData(data, function(obj_array){
+				callback(obj_array);	
 		});
-
 	});
 }
+
 	
 
 module.exports = wireless_scan

@@ -6,38 +6,13 @@ var spawn = require('child_process').spawn
 
 var connJSON
 
-function terminal_output(/*command,options,callback*/){
-
-	_default = { encoding: 'utf8', timeout: 0,maxBuffer: 200*1024,killSignal: 'SIGTERM',cwd: null,env: null }
-
-	command = arguments[0];
-
-	console.log('type of argument is ' + typeof arguments[2])
-
-	if((typeof arguments[1]) == 'object'){
-		options = arguments[1];
-		callback = arguments[2];
-	}
-
-	else if ((typeof arguments[1]) == 'function'){
-		options = _default;
-		callback = arguments[1];
-	}
-	
-	else
-		callback(new Error ('Give me some legit parameters...'));
-
-	exec(command,options, function(error, stdout, stderr){
-		callback(error, stdout, stderr);
-	});
-}
 
 function wireless_connect(jsonIn){
 	connJSON = jsonIn
 } 
 
 wireless_connect.prototype.connect = function(callback){
-	terminal_output('sudo /usr/bin/killall wpa_supplicant', function(error, stdout, stderr){
+	exec('sudo /usr/bin/killall wpa_supplicant', function(error, stdout, stderr){
 		console.log('wlan0 removed');
 	});
 	
@@ -56,10 +31,10 @@ stream.write('ctrl_interface_group=0\n');
 			stream.write('\twep_key0='+connJSON.password+'\n');
 			stream.write('}')
 			stream.end();
-						terminal_output('sudo /usr/sbin/wpa_supplicant -Dwext -iwlan0 -c ./wpa_supplicant.conf',{ encoding: 'utf8',timeout: 40000,maxBuffer: 200*1024,killSignal: 'SIGTERM',cwd: null,env: null }, function(error, stdout, stderr){
+			exec('sudo /usr/sbin/wpa_supplicant -Dwext -iwlan0 -c ./wpa_supplicant.conf',{timeout: 1000}, function(error, stdout, stderr){
 				console.log(error, stdout, stderr);
 				if(error | stderr) throw error;
-				terminal_output('sudo /sbin/udhcpc -i wlan0' ,{ encoding: 'utf8',timeout: 1000,maxBuffer: 200*1024,killSignal: 'SIGTERM',cwd: null,env: null }, function(error, stdout, stderr){
+				exec('sudo /sbin/udhcpc -i wlan0' ,{timeout: 30000}, function(error, stdout, stderr){
 					console.log(error, stdout, stderr);
 					console.log('Please do not hang :3');
 				});
@@ -92,10 +67,10 @@ stream.write('ctrl_interface_group=0\n');
 			}
 			stream.write('}');
 			stream.end();
-			terminal_output('sudo /usr/sbin/wpa_supplicant -Dwext -iwlan0 -c ./wpa_supplicant.conf -B',{ encoding: 'utf8',timeout: 1000,maxBuffer: 200*1024,killSignal: 'SIGTERM',cwd: null,env: null }, function(error, stdout, stderr){
+			exec('sudo /usr/sbin/wpa_supplicant -Dwext -iwlan0 -c ./wpa_supplicant.conf -B',{timeout: 1000}, function(error, stdout, stderr){
 				console.log(error, stdout, stderr);
 				if(error | stderr) throw error;
-				terminal_output('sudo /sbin/udhcpc -t 3 -i wlan0' ,{ encoding: 'utf8',timeout: 30000,maxBuffer: 200*1024,killSignal: 'SIGTERM',cwd: null,env: null }, function(error, stdout, stderr){
+				exec('sudo /sbin/udhcpc -t 3 -i wlan0' ,{timeout: 30000}, function(error, stdout, stderr){
 					console.log(error, stdout, stderr);
 					console.log('Please do not hang :3');
 				});
@@ -105,8 +80,8 @@ stream.write('ctrl_interface_group=0\n');
 }
 module.exports = wireless_connect
 //Test the module
-var JSONin = {"ssid":"RajNetwork","password":"e65d7a1414e6e34bc874ebdb69", "security":"WEP"}
-//var JSONin = {"ssid":"traegalia","password":"ADAB1C21BD82347205BB3B0156","security":"WPA-PSK"};
+//var JSONin = {"ssid":"RajNetwork","password":"e65d7a1414e6e34bc874ebdb69", "security":"WEP"}
+var JSONin = {"ssid":"traegalia","password":"ADAB1C21BD82347205BB3B0156","security":"WPA-PSK"};
 //var JSONin = {"ssid":"UCCS-Wireless","username":"sraj2", "password":"Iwashere1234", "special":"PEAP", "eaptype":"GTC", "security":"WPA-EAP"};
 var Connect = new wireless_connect(JSONin)
 Connect.connect();
