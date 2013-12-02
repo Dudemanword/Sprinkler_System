@@ -12,20 +12,25 @@ function wireless_scan(_interface){
 //Function for executing command in *NIX terminal. Output is sent to callback
 function terminal_output(command, callback){
 	exec(command, function(error, stdout, stderr){
-		callback(stdout);
+		callback(error,stdout,stderr);
 	});
 }
 
 
-wireless_scan.prototype.getData = function(callback){
+wireless_scan.prototype.getData = function(useEmp,callback){
+	terminal_output('pgrep wpa', function(error, stdout, stderr){
+		if((stdout == '') || (useEmp == 1)){
+			terminal_output('sudo /usr/sbin/wpa_supplicant -Dwext -iwlan0 -c ./empty_wpa_supplicant.conf', function(error, stdout, stderr){
+				console.log('reinitializing wpa_supplicant);
+			});
+		}			
 	terminal_output('sudo /usr/sbin/wpa_cli scan ' + wireless_interface, function(info){
 		console.log('scanned');
-		terminal_output('sudo /usr/sbin/wpa_cli scan_results', function(output){
+		terminal_output('sudo /usr/sbin/wpa_cli scan_results', function(error,output,stderr){
 			console.log('getting results');
 			callback(output);
 		});
-		});
-	
+	});	
 }
 
 wireless_scan.prototype.getIPaddress = function(callback){
